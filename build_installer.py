@@ -323,10 +323,10 @@ Name: "{{app}}\\logs"; Permissions: users-modify
 Name: "{{app}}\\scanned_images"; Permissions: users-modify
 
 [Icons]
-Name: "{{group}}\\{{#MyAppName}}"; Filename: "{{app}}\\{{#MyAppExeName}}"; WorkingDir: "{{app}}"
+Name: "{{group}}\\{{#MyAppName}}"; Filename: "{{app}}\\{{#MyAppExeName}}"; WorkingDir: "{{app}}"; AppUserModelID: "NTEDriveCalc.Desktop"
 Name: "{{group}}\\Install ViGEmBus driver"; Filename: "{vigem_install_filename}"; Parameters: "{vigem_install_params}"; WorkingDir: "{{app}}"; Check: IsWin64
 Name: "{{group}}\\Uninstall {{#MyAppName}}"; Filename: "{{uninstallexe}}"
-Name: "{{autodesktop}}\\{{#MyAppName}}"; Filename: "{{app}}\\{{#MyAppExeName}}"; WorkingDir: "{{app}}"; Tasks: desktopicon
+Name: "{{autodesktop}}\\{{#MyAppName}}"; Filename: "{{app}}\\{{#MyAppExeName}}"; WorkingDir: "{{app}}"; AppUserModelID: "NTEDriveCalc.Desktop"; Tasks: desktopicon
 
 [Run]
 Filename: "{vigem_install_filename}"; Parameters: "{vigem_install_params}"; StatusMsg: "Installing or repairing ViGEmBus virtual gamepad driver..."; Flags: waituntilterminated; Tasks: installvigem; Check: ShouldInstallViGEmBus

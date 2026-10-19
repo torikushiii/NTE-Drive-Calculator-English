@@ -22,6 +22,22 @@ def _global_exception_handler(exc_type, exc_value, exc_tb):
         logger.error(f"显示全局异常弹窗失败: {exc}")
 
 
+def _set_taskbar_identity() -> None:
+    """Give the process its own taskbar identity so Windows shows the window icon.
+
+    Without it the taskbar resolves the button icon from the host executable
+    (python.exe, or a stale icon-cache entry for a rebuilt exe).
+    """
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("NTEDriveCalc.Desktop")
+    except Exception as exc:
+        logger.debug(f"设置任务栏应用标识失败: {exc}")
+
+
 def run_gui(APP_CONTEXT, GLOBAL_THEME_SETTINGS, MainWindow, _ensure_admin):
     import faulthandler
 
@@ -43,6 +59,7 @@ def run_gui(APP_CONTEXT, GLOBAL_THEME_SETTINGS, MainWindow, _ensure_admin):
     # Preserve bootstrap flags in sys.argv for UAC relaunch and theme restart,
     # but do not pass them to Qt's platform-argument parser.
     qt_args = [arg for arg in sys.argv if arg not in {"--gui", "--ime-compat"}]
+    _set_taskbar_identity()
     app = QApplication(qt_args)
     app.setStyle("Fusion")
     account_settings = APP_CONTEXT.account_settings
