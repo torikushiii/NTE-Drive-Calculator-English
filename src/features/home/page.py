@@ -246,7 +246,10 @@ def build_home_page(window) -> QScrollArea:
 
     hero = QFrame()
     hero.setObjectName("homeHero")
-    hero.setStyleSheet(themed_style("QFrame#homeHero{background:#10243f;border:1px solid #1f6feb;border-radius:12px}"))
+    hero.setStyleSheet(themed_style(
+        "QFrame#homeHero{background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #10243f,stop:1 #161b22);"
+        "border:1px solid #21262d;border-radius:12px}"
+    ))
     hero_layout = QHBoxLayout(hero)
     hero_layout.setContentsMargins(22, 18, 22, 18)
     title_column = QVBoxLayout()
@@ -274,7 +277,8 @@ def build_home_page(window) -> QScrollArea:
     window.home_sync_badge = QLabel("未启动")
     window.home_sync_badge.setAlignment(Qt.AlignCenter)
     set_status_badge(window.home_sync_badge, "未启动", "neutral")
-    hero_layout.addWidget(window.home_sync_badge)
+    hero_layout.addSpacing(8)
+    hero_layout.addWidget(window.home_sync_badge, 0, Qt.AlignVCenter)
     root.addWidget(hero)
 
     window.home_upgrade_banner = QFrame(page)

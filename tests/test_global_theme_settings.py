@@ -69,7 +69,7 @@ class GlobalThemeSettingsTests(unittest.TestCase):
 
             self.assertIsNone(settings.legacy_theme_preference())
             self.assertEqual(
-                "black",
+                "modern",
                 global_settings.load(legacy_theme=settings.legacy_theme_preference()),
             )
 
@@ -192,10 +192,10 @@ class GlobalThemeSettingsTests(unittest.TestCase):
             path = Path(temporary) / "config" / "global_ui_preferences.json"
             service = GlobalThemeSettingsService(path)
 
-            self.assertEqual(service.load(), "black")
+            self.assertEqual(service.load(), "modern")
             self.assertEqual(
                 json.loads(path.read_text(encoding="utf-8")),
-                {"theme": "black"},
+                {"theme": "modern"},
             )
             path.write_text("{broken", encoding="utf-8")
             self.assertEqual(service.load(legacy_theme="light"), "light")

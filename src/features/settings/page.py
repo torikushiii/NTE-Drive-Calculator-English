@@ -328,9 +328,18 @@ def build_settings_page(
     mode_card = build_work_mode_card(window)
     layout.addWidget(mode_card)
 
+    # Row labels in Tool Settings and Hotkey Bindings share one width so
+    # their controls line up in a column.
+    row_labels: list[QLabel] = []
+
+    def row_label(text: str) -> QLabel:
+        label = QLabel(text)
+        row_labels.append(label)
+        return label
+
     log_card = window._card("工具设置")
     log_row = QHBoxLayout()
-    log_row.addWidget(QLabel("实时日志输出:"))
+    log_row.addWidget(row_label("实时日志输出:"))
     log_toggle = QCheckBox("启用运行日志")
     log_toggle.setChecked(window._log_enabled)
     log_toggle.toggled.connect(window._toggle_log)
@@ -346,12 +355,16 @@ def build_settings_page(
     window._refresh_log_session_status()
 
     protagonist_row = QHBoxLayout()
-    protagonist_row.addWidget(QLabel("主角游戏名:"))
+    protagonist_row.addWidget(row_label("主角游戏名:"))
     window._protagonist_game_name_edit = QLineEdit()
     window._protagonist_game_name_edit.setPlaceholderText("仅自动装配需要")
-    protagonist_name_width = (
-        window._protagonist_game_name_edit.fontMetrics().horizontalAdvance("零" * 8) + 36
-    )
+    from src.i18n import tr
+
+    name_metrics = window._protagonist_game_name_edit.fontMetrics()
+    protagonist_name_width = max(
+        name_metrics.horizontalAdvance("零" * 8),
+        name_metrics.horizontalAdvance(tr("仅自动装配需要")),
+    ) + 36
     window._protagonist_game_name_edit.setFixedWidth(protagonist_name_width)
     window._protagonist_game_name_edit.setText(
         str((getattr(window, "_ui_preferences", {}) or {}).get("protagonist_game_name") or "")
@@ -375,27 +388,30 @@ def build_settings_page(
     log_card.layout().addLayout(protagonist_row)
 
     theme_row = QHBoxLayout()
-    theme_row.addWidget(QLabel("主题颜色:"))
-    current_theme = getattr(window, "_theme_preference", "black")
+    theme_row.addWidget(row_label("主题颜色:"))
+    current_theme = getattr(window, "_theme_preference", "modern")
+    modern_radio = QRadioButton(THEME_LABELS["modern"])
     dark_radio = QRadioButton(THEME_LABELS["dark"])
     black_radio = QRadioButton(THEME_LABELS["black"])
     light_radio = QRadioButton(THEME_LABELS["light"])
-    theme_radios = {"dark": dark_radio, "black": black_radio, "light": light_radio}
-    current_radio = theme_radios.get(current_theme, theme_radios["black"])
+    theme_radios = {"modern": modern_radio, "dark": dark_radio, "black": black_radio, "light": light_radio}
+    current_radio = theme_radios.get(current_theme, theme_radios["modern"])
     current_radio.setChecked(True)
 
     def select_theme(theme: str):
         if window._set_theme_preference(theme):
             return
-        active_theme = getattr(window, "_theme_preference", "black")
+        active_theme = getattr(window, "_theme_preference", "modern")
         for value, radio in theme_radios.items():
             radio.blockSignals(True)
             radio.setChecked(value == active_theme)
             radio.blockSignals(False)
 
+    modern_radio.toggled.connect(lambda checked: checked and select_theme("modern"))
     dark_radio.toggled.connect(lambda checked: checked and select_theme("dark"))
     black_radio.toggled.connect(lambda checked: checked and select_theme("black"))
     light_radio.toggled.connect(lambda checked: checked and select_theme("light"))
+    theme_row.addWidget(modern_radio)
     theme_row.addWidget(dark_radio)
     theme_row.addWidget(black_radio)
     theme_row.addWidget(light_radio)
@@ -405,7 +421,7 @@ def build_settings_page(
     from src.i18n import SUPPORTED_LANGUAGES, current_language
 
     language_row = QHBoxLayout()
-    language_row.addWidget(QLabel("界面语言 / Language:"))
+    language_row.addWidget(row_label("界面语言 / Language:"))
     language_combo = NoWheelComboBox()
     for code, label in SUPPORTED_LANGUAGES.items():
         language_combo.addItem(label, code)
@@ -435,7 +451,7 @@ def build_settings_page(
     cap_row.setSpacing(8)
     window._hk_capture_edit = QKeySequenceEdit(QKeySequence(window._hk_capture))
     window._hk_capture_edit.setMaximumWidth(160)
-    cap_row.addWidget(QLabel("全局截图按键:"))
+    cap_row.addWidget(row_label("全局截图按键:"))
     cap_row.addWidget(window._hk_capture_edit)
     cap_row.addStretch()
     form.addRow(cap_row)
@@ -444,7 +460,7 @@ def build_settings_page(
     finish_row.setSpacing(8)
     window._hk_finish_edit = QKeySequenceEdit(QKeySequence(window._hk_finish))
     window._hk_finish_edit.setMaximumWidth(160)
-    finish_row.addWidget(QLabel("截图完成按键:"))
+    finish_row.addWidget(row_label("截图完成按键:"))
     finish_row.addWidget(window._hk_finish_edit)
     finish_row.addStretch()
     form.addRow(finish_row)
@@ -453,7 +469,7 @@ def build_settings_page(
     stop_row.setSpacing(8)
     window._hk_stop_edit = QKeySequenceEdit(QKeySequence(window._hk_stop))
     window._hk_stop_edit.setMaximumWidth(160)
-    stop_row.addWidget(QLabel("紧急停止按键:"))
+    stop_row.addWidget(row_label("紧急停止按键:"))
     stop_row.addWidget(window._hk_stop_edit)
     stop_row.addStretch()
     form.addRow(stop_row)
@@ -467,7 +483,7 @@ def build_settings_page(
     window._hk_battle_rerecord_edit.setToolTip(
         "战报采集中需在 1.5 秒内连续按两次才会放弃当前战报并重录。"
     )
-    rerecord_row.addWidget(QLabel("战报重录按键:"))
+    rerecord_row.addWidget(row_label("战报重录按键:"))
     rerecord_row.addWidget(window._hk_battle_rerecord_edit)
     rerecord_row.addStretch()
     form.addRow(rerecord_row)
@@ -496,6 +512,11 @@ def build_settings_page(
 
     hotkey_card.layout().addLayout(form)
     layout.addWidget(hotkey_card)
+    for label in row_labels:
+        label.ensurePolished()
+    label_width = max(label.sizeHint().width() for label in row_labels)
+    for label in row_labels:
+        label.setMinimumWidth(label_width)
 
     update_card = window._card("软件更新")
     window._update_status = QLabel(f"当前版本: {app_version}")

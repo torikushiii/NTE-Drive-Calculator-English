@@ -15,6 +15,7 @@ def custom_role_portrait(size: int, device_pixel_ratio: float = 1.0) -> QPixmap:
     background, border, glyph = {
         "light": ("#eaf2ff", "#8cb7ea", "#1f5fa8"),
         "black": ("#202327", "#525860", "#d4d9df"),
+        "modern": ("#1d1f25", "#454954", "#e3e5ea"),
     }.get(current_theme_name(), ("#19273a", "#3c638b", "#d9eaff"))
     pixels = max(size, round(size * device_pixel_ratio))
     portrait = QPixmap(pixels, pixels)

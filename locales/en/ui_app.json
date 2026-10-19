@@ -17,6 +17,7 @@
  "视觉解析必须显式提供截图目录": "Vision parsing requires an explicit screenshot directory",
  "创建 nte-core 客户端必须显式提供日志目录和应用目录": "Creating the nte-core client requires explicit log and app directories",
  "提交线程结束但未返回确认；请核对已保存内容。": "The submit thread ended without confirmation; verify what was saved.",
+ "现代主题": "Modern",
  "原主题": "Original",
  "黑色主题": "Dark",
  "白色主题": "Light",

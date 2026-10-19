@@ -19,6 +19,10 @@ This product includes components with separate license terms:
 - Npcap is not bundled. The application only links users to its official
   installer; any future bundled redistribution requires a separate Npcap OEM
   redistribution authorization.
+- The Inter typeface (assets/fonts/inter/) is distributed under the SIL Open
+  Font License 1.1; see assets/fonts/inter/OFL.txt.
+- Lucide icons (assets/icons/) are distributed under the ISC License; see
+  assets/icons/LICENSE-lucide.txt.
 
 Neverness To Everness / 异环 names, characters, artwork, logos and other game
 materials are property of their respective rights holders. NTE Drive Calc is

@@ -1,6 +1,7 @@
 # 构建主窗口框架、一级导航和页面切换行为。
 """MainWindow shell and primary navigation helpers."""
 from __future__ import annotations
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
@@ -22,7 +23,14 @@ from src.features.configuration.page import deactivate_config_page
 from src.features.inventory.equipment_display_view import (
     build_equipment_mode_switch,
 )
+from src.i18n import tr
+from src.ui.icons import NAV_ICONS, strip_leading_symbols, tinted_icon
 from src.ui.navigation import NAV_ITEMS, nav_index_map, nav_item_by_key
+
+
+def _nav_display_label(item) -> str:
+    # Labels carry emoji prefixes upstream; the sidebar draws icons instead.
+    return strip_leading_symbols(tr(item.label))
 
 class MainWindowNavigationMixin:
     def _build_ui(self):
@@ -62,23 +70,25 @@ class MainWindowNavigationMixin:
         sidebar.setObjectName("sidebar")
         sidebar.setFixedWidth(200)
         sl = QVBoxLayout(sidebar)
-        sl.setContentsMargins(0, 12, 0, 0)
+        sl.setContentsMargins(0, 12, 0, 12)
         sl.setSpacing(0)
         self._nav_buttons = {}
+        icon_color, icon_active = theme_color("#8b949e"), theme_color("#f0f6fc")
         for item in NAV_ITEMS:
-            # Keep the workbench icon-free but reserve the same leading visual
-            # column as emoji-prefixed navigation labels.  The page title
-            # still uses the unpadded metadata label.
-            nav_label = ("　  " + item.label) if item.key == "home" else item.label
-            button = self._nav(nav_label, item.key)
+            button = self._nav("  " + _nav_display_label(item), item.key)
+            button.setIcon(tinted_icon(NAV_ICONS.get(item.key, ""), icon_color, icon_active))
+            button.setIconSize(QSize(18, 18))
             setattr(self, item.button_attr, button)
             self._nav_buttons[item.key] = button
             if item.sidebar:
                 sl.addWidget(button)
+        sl.addStretch()
         self.work_mode_button = QPushButton("模式：离线")
+        self.work_mode_button.setObjectName("workModeButton")
+        self.work_mode_button.setIcon(tinted_icon("shield", theme_color("#6e7681")))
+        self.work_mode_button.setIconSize(QSize(16, 16))
         self.work_mode_button.clicked.connect(lambda: self._go("settings"))
         sl.addWidget(self.work_mode_button)
-        sl.addStretch()
         body.addWidget(sidebar)
 
         right = QWidget()
@@ -89,7 +99,7 @@ class MainWindowNavigationMixin:
         tbar.setObjectName("topbar")
         tbh = QHBoxLayout(tbar)
         tbh.setContentsMargins(20, 10, 20, 10)
-        self.topbar_title = QLabel(NAV_ITEMS[0].label)
+        self.topbar_title = QLabel(_nav_display_label(NAV_ITEMS[0]))
         tbh.addWidget(self.topbar_title)
         self.topbar_catalog_return = QPushButton("‹ 返回工具", tbar)
         self.topbar_catalog_return.setObjectName("staticCatalogReturnToToolbox")
@@ -107,18 +117,21 @@ class MainWindowNavigationMixin:
         tbh.addWidget(self.topbar_equipment_modes)
         tbh.addStretch()
         self.account_combo = QComboBox()
-        self.account_combo.setFixedWidth(150)
+        self.account_combo.setFixedWidth(180)
         self.account_combo.currentIndexChanged.connect(self._on_account_combo_changed)
         tbh.addWidget(self.account_combo)
         account_btn = QPushButton("管理账号")
         account_btn.setObjectName("btnAction")
+        account_btn.setIcon(tinted_icon("user-round", theme_color("#c9d1d9"), size=16))
         account_btn.clicked.connect(self._manage_accounts)
         tbh.addWidget(account_btn)
         guide_btn = QPushButton("新手向导")
         guide_btn.setObjectName("btnAction")
+        guide_btn.setIcon(tinted_icon("circle-help", theme_color("#c9d1d9"), size=16))
         guide_btn.clicked.connect(self.onboarding_guide.show)
         tbh.addWidget(guide_btn)
         self.status_lbl = QLabel("就绪")
+        self.status_lbl.setObjectName("topbarStatus")
         self.status_lbl.setStyleSheet(f"color:{theme_color('#6e7681')};font-size:12px")
         tbh.addWidget(self.status_lbl)
         guide_btn.setText("使用教程")
@@ -191,7 +204,7 @@ class MainWindowNavigationMixin:
             elif current == "config":
                 deactivate_config_page(self)
         self.stack.setCurrentIndex(indexes.get(item.key, 0))
-        self.topbar_title.setText(item.label)
+        self.topbar_title.setText(_nav_display_label(item))
         self.topbar_catalog_return.setVisible(item.key == "static_catalog")
         self.topbar_source_label.setVisible(item.key in {"identify", "config"})
         self.topbar_equipment_modes.setVisible(item.key == "equipment")

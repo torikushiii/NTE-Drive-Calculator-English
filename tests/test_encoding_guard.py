@@ -134,18 +134,20 @@ class EncodingGuardTests(unittest.TestCase):
                 failures.append(f"{module}: {type(exc).__name__}: {exc}")
         self.assertEqual([], failures)
 
-    def test_theme_preference_defaults_to_black_theme(self):
+    def test_theme_preference_defaults_to_modern_theme(self):
         from src.app.theme import THEME_LABELS, theme_preference
 
-        self.assertEqual("black", theme_preference(None))
-        self.assertEqual("black", theme_preference(""))
-        self.assertEqual("black", theme_preference("unknown"))
+        self.assertEqual("modern", theme_preference(None))
+        self.assertEqual("modern", theme_preference(""))
+        self.assertEqual("modern", theme_preference("unknown"))
+        self.assertEqual("modern", theme_preference("modern"))
         self.assertEqual("dark", theme_preference("dark"))
         self.assertEqual("black", theme_preference("black"))
         self.assertEqual("light", theme_preference("light"))
         self.assertEqual("原主题", THEME_LABELS["dark"])
         self.assertEqual("黑色主题", THEME_LABELS["black"])
         self.assertEqual("白色主题", THEME_LABELS["light"])
+        self.assertEqual("现代主题", THEME_LABELS["modern"])
 
     def test_bilibili_homepage_link_is_configured(self):
         from src.app.constants import BILIBILI_HOME_URL

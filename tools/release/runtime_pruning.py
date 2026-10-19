@@ -44,6 +44,9 @@ REQUIRED_QT_BINARIES = (
     "PySide6/Qt6OpenGL.dll",
     "PySide6/opengl32sw.dll",
     "PySide6/plugins/platforms/qwindows.dll",
+    # Modern theme icons and stylesheet indicator images are SVG.
+    "PySide6/Qt6Svg.dll",
+    "PySide6/plugins/imageformats/qsvg.dll",
 )
 
 # 计算仅调用 scipy.optimize 的 MILP 与线性分配；这四个子包没有调用方，

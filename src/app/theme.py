@@ -10,6 +10,13 @@ from PySide6.QtCore import QObject, QEvent
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QMessageBox
 
+from src.app.theme_modern import (
+    MODERN_STYLE,
+    apply_modern_palette,
+    load_modern_fonts,
+    map_modern_colors,
+    modern_color,
+)
 from src.app.window_geometry import fit_dialog_to_available_screen
 
 # S/SS and SSS/ACE deliberately use the opposite emphasis tiers.  All scoring
@@ -216,8 +223,10 @@ BLACK_STYLE = _map_black_colors(DARK_STYLE)
 STYLE = DARK_STYLE
 
 
-THEME_PREFERENCES = {"dark", "black", "light"}
+THEME_PREFERENCES = {"dark", "black", "light", "modern"}
+DEFAULT_THEME = "modern"
 THEME_LABELS = {
+    "modern": "现代主题",
     "dark": "原主题",
     "black": "黑色主题",
     "light": "白色主题",
@@ -225,13 +234,13 @@ THEME_LABELS = {
 
 
 def theme_preference(value: str | None) -> str:
-    return value if value in THEME_PREFERENCES else "black"
+    return value if value in THEME_PREFERENCES else DEFAULT_THEME
 
 
 def theme_name(value: str | None) -> str:
-    if value == "light":
-        return "light"
-    return "dark" if value == "dark" else "black"
+    if value in THEME_PREFERENCES:
+        return value
+    return DEFAULT_THEME
 
 
 def theme_style(theme: str | None) -> str:
@@ -240,14 +249,16 @@ def theme_style(theme: str | None) -> str:
         return LIGHT_STYLE
     if name == "black":
         return BLACK_STYLE
+    if name == "modern":
+        return MODERN_STYLE
     return DARK_STYLE
 
 
 def current_theme_name(app: QApplication | None = None) -> str:
     app = app or QApplication.instance()
     if app is None:
-        return "black"
-    return theme_name(str(app.property("nte_effective_theme") or "black"))
+        return DEFAULT_THEME
+    return theme_name(str(app.property("nte_effective_theme") or DEFAULT_THEME))
 
 
 def current_style_sheet(app: QApplication | None = None) -> str:
@@ -260,6 +271,8 @@ def themed_style(style: str, app: QApplication | None = None) -> str:
         return _map_light_colors(style)
     if theme == "black":
         return _map_black_colors(style)
+    if theme == "modern":
+        return map_modern_colors(style)
     return style
 
 
@@ -269,6 +282,8 @@ def theme_color(dark_color: str, app: QApplication | None = None) -> str:
         return LIGHT_COLOR_MAP.get(dark_color, dark_color)
     if theme == "black":
         return BLACK_COLOR_MAP.get(dark_color, dark_color)
+    if theme == "modern":
+        return modern_color(dark_color)
     return dark_color
 
 
@@ -295,6 +310,8 @@ def refresh_inline_theme_styles(root, app: QApplication | None = None) -> None:
             widget.setStyleSheet(_map_light_colors(base))
         elif theme == "black":
             widget.setStyleSheet(_map_black_colors(base))
+        elif theme == "modern":
+            widget.setStyleSheet(map_modern_colors(base))
         else:
             widget.setStyleSheet(base)
 
@@ -305,13 +322,17 @@ def apply_theme_palette(app: QApplication, theme: str | None = "black") -> None:
         apply_light_palette(app)
     elif name == "black":
         apply_black_palette(app)
+    elif name == "modern":
+        apply_modern_palette(app)
     else:
         apply_dark_palette(app)
 
 
-def apply_app_theme(app: QApplication, theme: str | None = "black") -> None:
+def apply_app_theme(app: QApplication, theme: str | None = DEFAULT_THEME) -> None:
     preference = theme_preference(theme)
     effective = theme_name(preference)
+    if effective == "modern":
+        load_modern_fonts()
     app.setProperty("nte_theme_preference", preference)
     app.setProperty("nte_effective_theme", effective)
     app.setStyleSheet(theme_style(effective))
@@ -427,6 +448,13 @@ class _DialogPolishFilter(QObject):
                 obj.setProperty("_nte_dialog_theme", theme)
                 obj.setStyleSheet(current_style_sheet() + "\n" + obj.styleSheet())
             localize_standard_buttons(obj)
+            # The restyle above (and translated text) can change fonts after the
+            # dialog was sized; grow it so buttons and labels are not clipped.
+            if obj.layout() is not None:
+                obj.layout().activate()
+                hint = obj.sizeHint()
+                if hint.width() > obj.width() or hint.height() > obj.height():
+                    obj.resize(max(hint.width(), obj.width()), max(hint.height(), obj.height()))
             apply_title_bar_theme(obj, theme)
             fit_dialog_to_available_screen(obj)
         return False

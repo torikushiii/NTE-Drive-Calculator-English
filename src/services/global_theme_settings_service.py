@@ -11,10 +11,10 @@ from pathlib import Path
 from src.utils.logger import logger
 
 
-THEME_PREFERENCES = frozenset({"dark", "black", "light"})
+THEME_PREFERENCES = frozenset({"dark", "black", "light", "modern"})
 
 
-def _normalized_theme(value: object, default: str = "black") -> str:
+def _normalized_theme(value: object, default: str = "modern") -> str:
     theme = str(value or "").strip()
     return theme if theme in THEME_PREFERENCES else default
 

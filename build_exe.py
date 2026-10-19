@@ -377,7 +377,8 @@ excludes = [
     "PySide6.QtHttpServer", "PySide6.QtQuick3D",
     "PySide6.QtQuickControls2", "PySide6.QtQuickWidgets",
     "PySide6.QtSpatialAudio", "PySide6.QtSvgWidgets",
-    "PySide6.QtSvg", "PySide6.QtUiTools",
+    # QtSvg stays: the Modern theme draws Lucide SVG icons (src/ui/icons.py).
+    "PySide6.QtUiTools",
     "PySide6.QtDesigner", "PySide6.QtOpenGL",
     "PySide6.QtOpenGLWidgets", "PySide6.QtNetwork",
     "PySide6.QtNetworkAuth", "PySide6.QtDBus",
