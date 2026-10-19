@@ -4,7 +4,7 @@
 import re
 
 __version__ = "2.3.1"
-ENGLISH_RELEASE_REVISION = 1
+ENGLISH_RELEASE_REVISION = 2
 ENGLISH_RELEASE_VERSION = f"{__version__}-english.{ENGLISH_RELEASE_REVISION}"
 ENGLISH_RELEASE_TAG = f"v{ENGLISH_RELEASE_VERSION}"
 # Python 包元数据遵守 PEP 440；应用与安装器仍显示用户约定的日期测试版。
