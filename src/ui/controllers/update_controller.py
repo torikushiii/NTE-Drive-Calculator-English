@@ -31,6 +31,7 @@ from src.app.constants import (
     GROUP_CHAT_DEVELOPER_HINT,
     GROUP_CHAT_DISCORD_HINT,
     GITHUB_HOME_URL,
+    UPSTREAM_HOME_URL,
     GITHUB_LATEST_RELEASE_URL,
     GITHUB_RELEASES_URL,
     GITHUB_RELEASES_API_URL,
@@ -511,6 +512,10 @@ def _open_project_homepage(self):
     self._open_url(GITHUB_HOME_URL)
 
 
+def _open_upstream_homepage(self):
+    self._open_url(UPSTREAM_HOME_URL)
+
+
 def _open_support_homepage(self):
     self._open_url(SUPPORT_US_URL)
 
@@ -659,6 +664,7 @@ class UpdateControllerMixin:
     _open_update_homepage = _open_update_homepage
     _open_bilibili_homepage = _open_bilibili_homepage
     _open_project_homepage = _open_project_homepage
+    _open_upstream_homepage = _open_upstream_homepage
     _open_support_homepage = _open_support_homepage
     _open_discord_group = _open_discord_group
     _show_group_chat_notice = _show_group_chat_notice

@@ -8,6 +8,7 @@ APP_VERSION = ENGLISH_RELEASE_VERSION
 ALLOCATION_TOTAL_SCORE_AREA = 35
 GITHUB_REPOSITORY = "torikushiii/NTE-Drive-Calculator-English"
 GITHUB_HOME_URL = f"https://github.com/{GITHUB_REPOSITORY}"
+UPSTREAM_HOME_URL = "https://github.com/hxwd94666/NTE-Drive-Calculator"
 GITHUB_RELEASES_URL = GITHUB_HOME_URL + "/releases"
 # GitHub's /latest excludes prereleases, including the first English build.
 GITHUB_LATEST_RELEASE_URL = GITHUB_RELEASES_URL
