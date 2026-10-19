@@ -21,9 +21,10 @@ Import your *Neverness to Everness* inventory as a computable stock, appraise Mo
 
 </div>
 
-> This is the English edition of NTE Drive Calc. The interface is translated at runtime; game
-> names use the official English localization. The in-game OCR scanner still
-> expects the game client to be set to Simplified Chinese.
+> This is an unofficial English edition, modified from
+> [hxwd94666/NTE-Drive-Calculator](https://github.com/hxwd94666/NTE-Drive-Calculator) in 2026.
+> It adds runtime UI translation and a Modern theme; game names use the official English
+> localization. The in-game OCR scanner still expects the game client to be set to Simplified Chinese.
 
 <a id="intro"></a>
 
