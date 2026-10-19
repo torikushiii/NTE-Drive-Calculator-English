@@ -23,6 +23,7 @@ from pathlib import Path
 
 _CJK = re.compile(r"[　-〿㐀-鿿＀-￯]")
 _IDEOGRAPH = re.compile(r"[\u3400-\u9fff]")
+_HTML_WRAP = re.compile(r"((?:<[a-zA-Z][^<>]*>)+)([^<>]+)((?:</[a-zA-Z]+>)+)")
 _FIELD = re.compile(r"\{([^{}]*)\}")
 # Templates with fewer literal ideographs only match when every captured value
 # was fully translated.
@@ -83,6 +84,14 @@ class Catalog:
             if inner is not None:
                 start = text.index(stripped)
                 return text[:start] + inner + text[start + len(stripped):]
+        # Rich-text wrappers such as "<b>名称</b>": translate the inner text as a whole
+        # so names containing "：" are not split by the segment fallback.
+        wrapped = _HTML_WRAP.fullmatch(text)
+        if wrapped is not None:
+            inner = self._exact.get(wrapped.group(2))
+            if inner is not None:
+                inner = _english_punctuation(inner, wrapped.group(2))
+                return wrapped.group(1) + inner + wrapped.group(3)
         by_line = None
         if "\n" in text:
             lines = text.split("\n")
